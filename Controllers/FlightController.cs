@@ -6,6 +6,10 @@ namespace Flights.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(500)]
+    [ProducesResponseType(typeof(IEnumerable<FlightRm>), 200)]
+
     public class FlightController : ControllerBase
     {
         private readonly ILogger<FlightController> _logger;
@@ -69,12 +73,25 @@ namespace Flights.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(typeof(IEnumerable<FlightRm>), 200)]
         public IEnumerable<FlightRm> Search()
         => flights;
 
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+
         [HttpGet("{id}")]
-        public FlightRm Find(Guid id)
-        => flights.SingleOrDefault(f => f.Id == id);
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(typeof(FlightRm), 200)]
+        public ActionResult<FlightRm> Find(Guid id)
+        {
+            var flight = flights.SingleOrDefault(f => f.Id == id);
+            if(flight == null)
+                return NotFound();
+            return Ok(flight);
+        }
     }
 
 
