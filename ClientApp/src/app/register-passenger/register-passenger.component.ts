@@ -3,6 +3,7 @@ import { PassengerService } from './../api/services/passenger.service';
 import { FormBuilder } from '@angular/forms';
 import { AuthService } from '../auth/auth.service';
 import { Router } from '@angular/router';
+//import { error } from 'console';
 
 @Component({
   selector: 'app-register-passenger',
@@ -30,7 +31,9 @@ export class RegisterPassengerComponent {
       const params = { email: email };  // Correct way to create params object
       this.passengerService.findPassenger(params)
         .subscribe(() => this.login(email),
-        error => { if (error.status != 404) console.error(error) });
+          error => { if (error.status != 404) console.error(error) });
+      //error => {console.error(error) });
+
     }
   }
 
@@ -42,13 +45,15 @@ export class RegisterPassengerComponent {
   // Check if email is available
   if (email) {
     this.passengerService.registerPassenger({ body: this.form.value })
-      .subscribe(() => this.login(email), error => console.error(error));  // Correct way to pass email
+      .subscribe(() => this.login(email),
+      error => console.error(error));  // Correct way to pass email
   }
   }
 
   private login(email: string) {
-    this.authService.loginUser({ email: email })  // Correct way to pass email
-    this.router.navigate(['/search-flights'])
+    this.authService.loginUser({ email: email });
+
+    this.router.navigate(['/search-flights']);
   }
 
 }

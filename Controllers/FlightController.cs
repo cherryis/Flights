@@ -1,6 +1,7 @@
 ﻿using Flights.ReadModel;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using Flights.Dtos;
 
 namespace Flights.Controllers
 {
@@ -67,10 +68,14 @@ namespace Flights.Controllers
                 new TimePlaceRm("Zagreb",DateTime.Now.AddHours(random.Next(4, 60))),
                     random.Next(1, 853))
          };
+        static private IList<BookDto> Bookings = new List<BookDto>();
+
+
         public FlightController(ILogger<FlightController> logger)
         {
             _logger = logger;
         }
+
 
         [HttpGet]
         [ProducesResponseType(400)]
@@ -88,14 +93,32 @@ namespace Flights.Controllers
         public ActionResult<FlightRm> Find(Guid id)
         {
             var flight = flights.SingleOrDefault(f => f.Id == id);
-            if(flight == null)
+            if (flight == null)
                 return NotFound();
             return Ok(flight);
         }
+
+        [HttpPost]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(200)]
+
+
+        public IActionResult Book(BookDto book)
+        {
+            System.Diagnostics.Debug.WriteLine($"Booking a new flight {book.FlightId}");
+            
+            var flightFound = flights.Any(f => f.Id == book.FlightId);
+
+            if(flightFound == false)
+                return NotFound();
+
+            Bookings.Add(book);
+            return CreatedAtAction(nameof(Find), new { id = book.FlightId });
+        }
+
+
+
     }
-
-
-
-
-
 }
