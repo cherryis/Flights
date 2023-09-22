@@ -1,6 +1,5 @@
 ﻿using Flights.ReadModel;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using Flights.Dtos;
 
 namespace Flights.Controllers
