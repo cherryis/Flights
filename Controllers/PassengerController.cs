@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Flights.Dtos;
 using Flights.ReadModel;
+using Flights.Domain.Entities;
 
 namespace Flights.Controllers
 {
@@ -8,7 +9,7 @@ namespace Flights.Controllers
     [ApiController]
     public class PassengerController : ControllerBase
     {
-        static private IList<NewPassengerDto> Passengers = new List<NewPassengerDto>();
+        static private IList<Passenger> Passengers = new List<Passenger>();
 
         [HttpPost]
         [ProducesResponseType(201)]
@@ -16,7 +17,12 @@ namespace Flights.Controllers
         [ProducesResponseType(500)]
         public IActionResult Register(NewPassengerDto dto)
         {
-            Passengers.Add(dto);
+            Passengers.Add(new Passenger(
+                dto.Email,
+                dto.FirstName,
+                dto.LastName,
+                dto.Gender
+                ));
             System.Diagnostics.Debug.WriteLine(Passengers.Count);
             return CreatedAtAction(nameof(Find), new {email=dto.Email});
         }

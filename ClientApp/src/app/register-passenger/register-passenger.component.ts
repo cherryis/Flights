@@ -17,7 +17,7 @@ export class RegisterPassengerComponent {
     private router: Router) { }
 
   form = this.fb.group({
-    email: ['', Validators.compose([Validators.required, Validators.minLength(1), Validators.maxLength(100)])],
+    email: ['', Validators.compose([Validators.required, Validators.minLength(3), Validators.maxLength(100)])],
     firstName: ['', Validators.compose([Validators.required, Validators.minLength(1), Validators.maxLength(35)])],
     lastName: ['', Validators.compose([Validators.required, Validators.minLength(1), Validators.maxLength(35)])],
     isFemale: [true, Validators.required]
