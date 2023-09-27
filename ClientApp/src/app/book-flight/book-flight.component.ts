@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FlightService } from './../api/services/flight.service';
 import { BookDto, FlightRm } from '../api/models';
 import { AuthService } from '../auth/auth.service';
-import { FormBuilder, Validator, Validators } from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-book-flight',
@@ -45,6 +45,12 @@ export class BookFlightComponent
     if (err.status == 404) {
       alert("Flight not found!")
       this.router.navigate(['/search-flights'])
+    }
+
+    if (err.status == 409) {
+      console.log("err: " + err);
+    //  alert(JSON.parse(err.error).message)
+      alert(err.error.message)
     }
 
     console.log("Response Error. Status: ", err.status)
