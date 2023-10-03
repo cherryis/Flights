@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Flights.Dtos;
 using Flights.Domain.Errors;
 using Flights.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace Flights.Controllers
 {
@@ -58,7 +59,7 @@ namespace Flights.Controllers
             var readModel = new FlightRm(
                 flight.Id,
                 flight.Airline,
-                flight.Price, 
+                flight.Price,
                 new TimePlaceRm(flight.Departure.Place.ToString(), flight.Departure.Time),
                 new TimePlaceRm(flight.Arrival.Place.ToString(), flight.Arrival.Time),
                 flight.RemainingNumberOfSeats
@@ -76,16 +77,25 @@ namespace Flights.Controllers
         public IActionResult Book(BookDto dto)
         {
             System.Diagnostics.Debug.WriteLine($"Booking a new flight {dto.FlightId}");
-            
+
             var flight = _entities.Flights.SingleOrDefault(f => f.Id == dto.FlightId);
 
-            if(flight == null)
+            if (flight == null)
                 return NotFound();
 
             var error = flight.MakeBooking(dto.PassengerEmail, dto.NumberOfSeats);
 
-            if(error is OverbookError)
-                return Conflict(new {message = "Sorry, Not Enough Seats"});
+            if (error is OverbookError)
+                return Conflict(new { message = "Sorry, Not Enough Seats" });
+            try
+            {
+                _entities.SaveChanges();
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                return Conflict(new { message = "An error occurred while booking. Try again!" });
+
+            }
 
             return CreatedAtAction(nameof(Find), new { id = dto.FlightId });
         }
