@@ -109,50 +109,6 @@ export class FlightService extends BaseService {
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `bookFlight$Plain()` instead.
-   *
-   * This method sends `application/*+json` and handles request body of type `application/*+json`.
-   */
-  bookFlight$Plain$Response(
-    params?: {
-      body?: BookDto
-    },
-    context?: HttpContext
-  ): Observable<StrictHttpResponse<Array<FlightRm>>> {
-    const rb = new RequestBuilder(this.rootUrl, FlightService.BookFlightPath, 'post');
-    if (params) {
-      rb.body(params.body, 'application/*+json');
-    }
-
-    return this.http.request(
-      rb.build({ responseType: 'text', accept: 'text/plain', context })
-    ).pipe(
-      filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
-      map((r: HttpResponse<any>) => {
-        return r as StrictHttpResponse<Array<FlightRm>>;
-      })
-    );
-  }
-
-  /**
-   * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `bookFlight$Plain$Response()` instead.
-   *
-   * This method sends `application/*+json` and handles request body of type `application/*+json`.
-   */
-  bookFlight$Plain(
-    params?: {
-      body?: BookDto
-    },
-    context?: HttpContext
-  ): Observable<Array<FlightRm>> {
-    return this.bookFlight$Plain$Response(params, context).pipe(
-      map((r: StrictHttpResponse<Array<FlightRm>>): Array<FlightRm> => r.body)
-    );
-  }
-
-  /**
-   * This method provides access to the full `HttpResponse`, allowing access to response headers.
    * To access only the response body, use `bookFlight()` instead.
    *
    * This method sends `application/*+json` and handles request body of type `application/*+json`.
@@ -162,18 +118,18 @@ export class FlightService extends BaseService {
       body?: BookDto
     },
     context?: HttpContext
-  ): Observable<StrictHttpResponse<Array<FlightRm>>> {
+  ): Observable<StrictHttpResponse<void>> {
     const rb = new RequestBuilder(this.rootUrl, FlightService.BookFlightPath, 'post');
     if (params) {
       rb.body(params.body, 'application/*+json');
     }
 
     return this.http.request(
-      rb.build({ responseType: 'json', accept: 'text/json', context })
+      rb.build({ responseType: 'text', accept: '*/*', context })
     ).pipe(
       filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
       map((r: HttpResponse<any>) => {
-        return r as StrictHttpResponse<Array<FlightRm>>;
+        return (r as HttpResponse<any>).clone({ body: undefined }) as StrictHttpResponse<void>;
       })
     );
   }
@@ -189,9 +145,9 @@ export class FlightService extends BaseService {
       body?: BookDto
     },
     context?: HttpContext
-  ): Observable<Array<FlightRm>> {
+  ): Observable<void> {
     return this.bookFlight$Response(params, context).pipe(
-      map((r: StrictHttpResponse<Array<FlightRm>>): Array<FlightRm> => r.body)
+      map((r: StrictHttpResponse<void>): void => r.body)
     );
   }
 
