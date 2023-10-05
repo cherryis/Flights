@@ -37,6 +37,9 @@ export class MyBookingsComponent {
       numberOfSeats: booking.numberOfBookedSeats,
       passengerEmail: booking.passengerEmail
     };
-    this.bookingService.cancelBooking({ body: dto }).subscribe(_ => { }, this.handleError)
+
+    this.bookingService.cancelBooking({ body: dto })
+      .subscribe(_ => this.bookings = this.bookings.filter(b => b != booking),
+        this.handleError)
   }
 }
