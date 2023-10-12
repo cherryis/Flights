@@ -6,14 +6,16 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add db context
-builder.Services.AddDbContext<Entities>(options => options.UseInMemoryDatabase(databaseName: "Flights"), ServiceLifetime.Singleton);
+// self-signed certificate of DB server automatically became untrusted. It needed to add '+ "TrustServerCertificate=True;"'
+builder.Services.AddDbContext<Entities>(options =>
+options.UseSqlServer(builder.Configuration.GetConnectionString("Flights")));
 
 // Add services to the container.
 
 builder.Services.AddControllersWithViews();
-builder.Services.AddSwaggerGen( c =>
+builder.Services.AddSwaggerGen(c =>
 {
-    c.AddServer(new OpenApiServer 
+    c.AddServer(new OpenApiServer
     {
         Description = "Development Server",
         Url = "https://localhost:7078"
@@ -21,14 +23,18 @@ builder.Services.AddSwaggerGen( c =>
     c.CustomOperationIds(e => $"{e.ActionDescriptor.RouteValues["action"] + e.ActionDescriptor.RouteValues["controller"]}");
 });
 
-builder.Services.AddSingleton<Entities>();
+builder.Services.AddScoped<Entities>();
 
 var app = builder.Build();
-
 var entities = app.Services.CreateScope().ServiceProvider.GetService<Entities>();
+
+entities.Database.EnsureCreated();
+
 var random = new Random();
 
-Flight[] flightsToSeed = new Flight[]
+if (!entities.Flights.Any())
+{
+    Flight[] flightsToSeed = new Flight[]
 {
            new (   Guid.NewGuid(),
                 "American Airlines",
@@ -80,10 +86,11 @@ Flight[] flightsToSeed = new Flight[]
                     random.Next(1, 853))
 
 };
-entities.Flights.AddRange(flightsToSeed); //added something
+    entities.Flights.AddRange(flightsToSeed); //added something
+    entities.SaveChanges();
+}
 
 
-entities.SaveChanges();
 
 app.UseCors(builder => builder.WithOrigins("*").AllowAnyMethod().AllowAnyHeader());
 

@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { BookingRm, BookDto } from '../api/models';
 import { BookingService } from './../api/services/booking.service';
 import { AuthService } from './../auth/auth.service';
-import { Route, Router } from '@angular/router';
 
 @Component({
   selector: 'app-my-bookings',
@@ -10,16 +9,12 @@ import { Route, Router } from '@angular/router';
   styleUrls: ['./my-bookings.component.css']
 })
 export class MyBookingsComponent {
-  bookings!: BookingRm[];
 
+  bookings!: BookingRm[];
   constructor(private bookingService: BookingService,
-    private authService: AuthService,
-    private router: Router) { }
+    private authService: AuthService) { }
 
   ngOnInit(): void {
-    if (!this.authService.currentUser?.email) //If the user don't have email
-      this.router.navigate(['/register-passenger'])
-
     this.bookingService.listBooking({ email: this.authService.currentUser?.email ?? '' })
       .subscribe(r => this.bookings = r, this.handleError);
   }

@@ -2,8 +2,7 @@ import { Component } from '@angular/core';
 import { PassengerService } from './../api/services/passenger.service';
 import { FormBuilder, Validators } from '@angular/forms';
 import { AuthService } from '../auth/auth.service';
-import { Router } from '@angular/router';
-//import { error } from 'console';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-register-passenger',
@@ -14,7 +13,9 @@ export class RegisterPassengerComponent {
 
   constructor(private passengerService: PassengerService,
     private fb: FormBuilder, private authService: AuthService,
-    private router: Router) { }
+    private router: Router, private activateRoute: ActivatedRoute) { }
+
+  requestedUrl?: string= undefined
 
   form = this.fb.group({
     email: ['', Validators.compose([Validators.required, Validators.minLength(3), Validators.maxLength(100)])],
@@ -22,7 +23,9 @@ export class RegisterPassengerComponent {
     lastName: ['', Validators.compose([Validators.required, Validators.minLength(1), Validators.maxLength(35)])],
     isFemale: [true, Validators.required]
   })
-
+  ngOnInit() {
+    this.activateRoute.params.subscribe(p => this.requestedUrl = p['requestedUrl'])
+  }
   checkPassenger(): void {
     const email = this.form.get('email')?.value;  // Extract email from the form
 
@@ -54,8 +57,7 @@ export class RegisterPassengerComponent {
 
   private login(email: string) {
     this.authService.loginUser({ email: email });
-
-    this.router.navigate(['/search-flights']);
+    this.router.navigate([this.requestedUrl ?? '/search-flights']);
   }
 
 }
