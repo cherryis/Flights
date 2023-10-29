@@ -31,9 +31,30 @@ namespace Flights.Controllers
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
         [ProducesResponseType(typeof(IEnumerable<FlightRm>), 200)]
-        public IEnumerable<FlightRm> Search()
+        public IEnumerable<FlightRm> Search([FromQuery]FlightSearchParameters parameters)
         {
-            var flightRmList = _entities.Flights.Select(flight => new FlightRm(
+            _logger.LogInformation("Searching for a flight for: {Destination}", parameters.Destination);
+
+            IQueryable<Flight> flights = _entities.Flights;
+
+            if (!string.IsNullOrWhiteSpace(parameters.Destination))
+                flights = flights.Where(f => f.Arrival.Place.Contains(parameters.Destination));
+
+            if (!string.IsNullOrWhiteSpace(parameters.From))
+                flights = flights.Where(f => f.Departure.Place.Contains(parameters.From));
+
+            if (parameters.FromDate != null)
+                flights = flights.Where(f => f.Departure.Time >= parameters.FromDate.Value.Date);
+
+            if (parameters.ToDate != null)
+                flights = flights.Where(f => f.Departure.Time >= parameters.ToDate.Value.Date.AddDays(1).AddTicks(-1));
+
+            if (parameters.NumberOfPassengers != 0 && parameters.NumberOfPassengers != null)
+                flights = flights.Where(f => f.RemainingNumberOfSeats >= parameters.NumberOfPassengers);
+            else
+                flights = flights.Where(f => f.RemainingNumberOfSeats >= 1);
+
+            var flightRmList = flights.Select(flight => new FlightRm(
                 flight.Id,
                 flight.Airline,
                 flight.Price,

@@ -30,11 +30,21 @@ export class FlightService extends BaseService {
    */
   searchFlight$Plain$Response(
     params?: {
+      fromDate?: string;
+      toDate?: string;
+      from?: string;
+      destination?: string;
+      numberOfPassengers?: number;
     },
     context?: HttpContext
   ): Observable<StrictHttpResponse<Array<FlightRm>>> {
     const rb = new RequestBuilder(this.rootUrl, FlightService.SearchFlightPath, 'get');
     if (params) {
+      rb.query('fromDate', params.fromDate, {});
+      rb.query('toDate', params.toDate, {});
+      rb.query('from', params.from, {});
+      rb.query('destination', params.destination, {});
+      rb.query('numberOfPassengers', params.numberOfPassengers, {});
     }
 
     return this.http.request(
@@ -55,6 +65,11 @@ export class FlightService extends BaseService {
    */
   searchFlight$Plain(
     params?: {
+      fromDate?: string;
+      toDate?: string;
+      from?: string;
+      destination?: string;
+      numberOfPassengers?: number;
     },
     context?: HttpContext
   ): Observable<Array<FlightRm>> {
@@ -71,11 +86,21 @@ export class FlightService extends BaseService {
    */
   searchFlight$Response(
     params?: {
+      fromDate?: string | undefined;
+      toDate?: string | undefined;
+      from?: string | undefined;
+      destination?: string | undefined;
+      numberOfPassengers?: number | undefined;
     },
     context?: HttpContext
   ): Observable<StrictHttpResponse<Array<FlightRm>>> {
     const rb = new RequestBuilder(this.rootUrl, FlightService.SearchFlightPath, 'get');
     if (params) {
+      rb.query('fromDate', params.fromDate, {});
+      rb.query('toDate', params.toDate, {});
+      rb.query('from', params.from, {});
+      rb.query('destination', params.destination, {});
+      rb.query('numberOfPassengers', params.numberOfPassengers, {});
     }
 
     return this.http.request(
@@ -96,6 +121,11 @@ export class FlightService extends BaseService {
    */
   searchFlight(
     params?: {
+      fromDate?: string | undefined;
+      toDate?: string | undefined;
+      from?: string | undefined;
+      destination?: string | undefined;
+      numberOfPassengers?: number | undefined;
     },
     context?: HttpContext
   ): Observable<Array<FlightRm>> {

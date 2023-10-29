@@ -15,6 +15,7 @@ options.UseSqlServer(builder.Configuration.GetConnectionString("Flights")));
 builder.Services.AddControllersWithViews();
 builder.Services.AddSwaggerGen(c =>
 {
+    c.DescribeAllParametersInCamelCase();
     c.AddServer(new OpenApiServer
     {
         Description = "Development Server",
@@ -75,14 +76,14 @@ if (!entities.Flights.Any())
         new (   Guid.NewGuid(),
                 "ABA Air",
                 random.Next(90, 5000).ToString(),
-                new TimePlace("Praha Ruzyne",DateTime.Now.AddHours(random.Next(1, 55))),
-                new TimePlace("Paris",DateTime.Now.AddHours(random.Next(4, 58))),
+                new TimePlace("Seattle, WA",DateTime.Now.AddHours(random.Next(1, 55))),
+                new TimePlace("Paris, FR",DateTime.Now.AddHours(random.Next(4, 58))),
                     random.Next(1, 853)),
         new (   Guid.NewGuid(),
                 "AB Corporate Aviation",
                 random.Next(90, 5000).ToString(),
-                new TimePlace("Le Bourget",DateTime.Now.AddHours(random.Next(1, 58))),
-                new TimePlace("Zagreb",DateTime.Now.AddHours(random.Next(4, 60))),
+                new TimePlace("Porland, OR",DateTime.Now.AddHours(random.Next(1, 58))),
+                new TimePlace("Sandiego, CA",DateTime.Now.AddHours(random.Next(4, 60))),
                     random.Next(1, 853))
 
 };
